@@ -19,7 +19,7 @@ public class FirstAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-       CreateUserDto userDto =  (CreateUserDto) authentication.getPrincipal();
+        CreateUserDto userDto = (CreateUserDto) authentication.getPrincipal();
 
         String phoneNo = userDto.getPhoneNo();
         User user = service.findByPhoneNo(phoneNo);

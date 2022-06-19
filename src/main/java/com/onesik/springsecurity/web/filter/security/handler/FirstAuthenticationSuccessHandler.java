@@ -29,7 +29,7 @@ public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
         String jwtToken = (String) authentication.getCredentials();
         User findUser = service.findByJwtToken(jwtToken);
 
-        if(!user.equals(findUser)) throw new UsernameNotFoundException("error");
+        if (!user.equals(findUser)) throw new UsernameNotFoundException("error");
 
         // create LoginHistory
     }
