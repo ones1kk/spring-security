@@ -21,10 +21,10 @@ public class FirstAuthenticateFilter extends AbstractAuthenticationFilter {
         CreateUserDto createUser = CreateUserDto.builder()
                 .username(username)
                 .birthDate(birthDate)
-                .PhoneNumber(phoneNumber)
+                .phoneNo(phoneNumber)
                 .build();
 
-        FirstAuthenticationToken token = new FirstAuthenticationToken(createUser);
+        FirstAuthenticationToken token = new FirstAuthenticationToken(createUser, null);
 
         // Call Authentication Provider
         return super.getAuthenticationManager().authenticate(token);

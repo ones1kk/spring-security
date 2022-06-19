@@ -12,19 +12,22 @@ public class FirstAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
 
-    public FirstAuthenticationToken(Object principal) {
+    private final String credentials;
+
+    public FirstAuthenticationToken(Object principal, String credentials) {
         super(Collections.singletonList(AUTHORITY));
         this.principal = principal;
-        validate(principal);
+        this.credentials = credentials;
+        validate(principal, credentials);
     }
 
-    public void validate(Object principal) {
+    public void validate(Object principal, String credentials) {
         if (principal == null) throw new NullPointerException("User can not be null");
     }
 
     @Override
     public Object getCredentials() {
-        return null;
+        return credentials;
     }
 
     @Override

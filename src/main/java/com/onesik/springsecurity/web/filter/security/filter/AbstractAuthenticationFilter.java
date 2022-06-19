@@ -16,9 +16,9 @@ import java.io.IOException;
 
 public abstract class AbstractAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    protected static final String USERNAME = "username";
-    protected static final String BIRTH_DATE = "birthDate";
-    protected static final String PHONE_NUMBER = "phoneNumber";
+    public static final String USERNAME = "username";
+    public static final String BIRTH_DATE = "birthDate";
+    public static final String PHONE_NO = "phoneNo";
 
     private static final RequestMatcher DEFAULT_REQUEST_MATCHER = new AntPathRequestMatcher(
             AuthenticationPath.FIRST_LOGIN_API.getPath(), HttpMethod.POST.name());
