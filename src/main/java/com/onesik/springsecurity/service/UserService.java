@@ -15,7 +15,4 @@ public class UserService {
         return repository.findByPhoneNo(phoneNo);
     }
 
-    public User findByJwtToken(String jwtToken) {
-        return repository.findByJwtToken(jwtToken);
-    }
 }

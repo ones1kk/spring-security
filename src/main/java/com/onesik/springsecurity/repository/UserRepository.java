@@ -6,6 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByPhoneNo(String phoneNo);
 
-    User findByJwtToken(String jwtToken);
-
 }
