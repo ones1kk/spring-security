@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public abstract class AbstractAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public abstract class AbstractFirstAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public static final String USERNAME = "username";
     public static final String BIRTH_DATE = "birthDate";
@@ -23,17 +23,17 @@ public abstract class AbstractAuthenticationFilter extends AbstractAuthenticatio
     private static final RequestMatcher DEFAULT_REQUEST_MATCHER = new AntPathRequestMatcher(
             AuthenticationPath.FIRST_LOGIN_API.getPath(), HttpMethod.POST.name());
 
-    protected AbstractAuthenticationFilter() {
+    protected AbstractFirstAuthenticationFilter() {
         super(DEFAULT_REQUEST_MATCHER);
     }
 
-    protected AbstractAuthenticationFilter(String requestPattern) {
+    protected AbstractFirstAuthenticationFilter(String requestPattern) {
         super(new AntPathRequestMatcher(requestPattern, HttpMethod.POST.name()));
     }
 
     @Override
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        boolean required = super.requiresAuthentication(request, response);
+         boolean required = super.requiresAuthentication(request, response);
 
         Authentication token = SecurityContextHolder.getContext().getAuthentication();
         if (token == null) return required;
