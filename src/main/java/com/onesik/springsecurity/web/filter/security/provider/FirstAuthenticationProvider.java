@@ -10,8 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.UUID;
-
 @RequiredArgsConstructor
 public class FirstAuthenticationProvider implements AuthenticationProvider {
 
@@ -20,20 +18,18 @@ public class FirstAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         CreateUserDto userDto = (CreateUserDto) authentication.getPrincipal();
-
+        User user = userDto.toEntity();
         String phoneNo = userDto.getPhoneNo();
-        User user = service.findByPhoneNo(phoneNo);
+        User findUser = service.findByPhoneNo(phoneNo);
 
         // validate conditions...
-        if (user == null) throw new UsernameNotFoundException("존재하는 회원이 없습니다.");
+        if (findUser == null) throw new UsernameNotFoundException("존재하는 회원이 없습니다.");
+
+        if (!user.equals(findUser)) throw new UsernameNotFoundException("존재하는 회원이 없습니다.");
 
 
-        // create JWT token
-        String jwtToken = UUID.randomUUID().toString();
-        Authentication token = new FirstAuthenticationToken(user, jwtToken);
+        Authentication token = new FirstAuthenticationToken(findUser);
         token.setAuthenticated(true);
-
-        // update JWT token
 
         return token;
     }

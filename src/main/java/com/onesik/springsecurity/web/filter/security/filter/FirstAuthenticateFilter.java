@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RequiredArgsConstructor
-public class FirstAuthenticateFilter extends AbstractAuthenticationFilter {
+public class FirstAuthenticateFilter extends AbstractFirstAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = getRequestParam(request, AbstractAuthenticationFilter.USERNAME);
-        String birthDate = getRequestParam(request, AbstractAuthenticationFilter.BIRTH_DATE);
-        String phoneNumber = getRequestParam(request, AbstractAuthenticationFilter.PHONE_NUMBER);
+        String username = getRequestParam(request, AbstractFirstAuthenticationFilter.USERNAME);
+        String birthDate = getRequestParam(request, AbstractFirstAuthenticationFilter.BIRTH_DATE);
+        String phoneNumber = getRequestParam(request, AbstractFirstAuthenticationFilter.PHONE_NO);
 
         CreateUserDto createUser = CreateUserDto.builder()
                 .username(username)
@@ -24,10 +24,11 @@ public class FirstAuthenticateFilter extends AbstractAuthenticationFilter {
                 .phoneNo(phoneNumber)
                 .build();
 
-        FirstAuthenticationToken token = new FirstAuthenticationToken(createUser, null);
+        FirstAuthenticationToken token = new FirstAuthenticationToken(createUser);
 
         // Call Authentication Provider
-        return super.getAuthenticationManager().authenticate(token);
+        Authentication authenticate = super.getAuthenticationManager().authenticate(token);
+        return authenticate;
     }
 
     private String getRequestParam(HttpServletRequest request, String paramName) {

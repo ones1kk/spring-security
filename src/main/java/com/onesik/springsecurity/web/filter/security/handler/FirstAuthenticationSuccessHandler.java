@@ -1,7 +1,11 @@
 package com.onesik.springsecurity.web.filter.security.handler;
 
+import com.onesik.springsecurity.domain.SmsHistory;
 import com.onesik.springsecurity.domain.User;
+import com.onesik.springsecurity.service.SmsHistoryService;
 import com.onesik.springsecurity.service.UserService;
+import com.onesik.springsecurity.web.jwt.JwtProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -10,14 +14,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+@RequiredArgsConstructor
 public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private UserService service;
+    private final SmsHistoryService smsHistoryService;
 
-    public FirstAuthenticationSuccessHandler(String targetUrl, UserService service) {
+    public FirstAuthenticationSuccessHandler(String targetUrl, SmsHistoryService smsHistoryService) {
         super(targetUrl);
-        this.service = service;
+        this.smsHistoryService = smsHistoryService;
     }
 
     @Override
@@ -26,11 +36,20 @@ public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         User user = (User) authentication.getPrincipal();
 
-        String jwtToken = (String) authentication.getCredentials();
-        User findUser = service.findByJwtToken(jwtToken);
+        SecureRandom secureRandom = new SecureRandom();
+        String authNo = IntStream.range(0, 6)
+                .mapToObj(i -> secureRandom.nextInt(9))
+                .map(String::valueOf)
+                .collect(Collectors.joining());
 
-        if (!user.equals(findUser)) throw new UsernameNotFoundException("error");
+        SmsHistory smsHistory = SmsHistory.builder()
+                .authNo(authNo)
+                .user(user)
+                .localDateTime(LocalDateTime.now())
+                .build();
 
-        // create LoginHistory
+        // send SMS
+        smsHistoryService.save(smsHistory);
+
     }
 }
