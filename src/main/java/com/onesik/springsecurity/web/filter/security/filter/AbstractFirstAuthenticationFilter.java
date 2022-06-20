@@ -33,7 +33,7 @@ public abstract class AbstractFirstAuthenticationFilter extends AbstractAuthenti
 
     @Override
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-         boolean required = super.requiresAuthentication(request, response);
+        boolean required = super.requiresAuthentication(request, response);
 
         Authentication token = SecurityContextHolder.getContext().getAuthentication();
         if (token == null) return required;

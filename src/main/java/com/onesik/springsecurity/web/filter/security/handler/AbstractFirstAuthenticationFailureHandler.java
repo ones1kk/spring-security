@@ -1,9 +1,6 @@
 package com.onesik.springsecurity.web.filter.security.handler;
 
-import com.onesik.springsecurity.domain.User;
-import com.onesik.springsecurity.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -12,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 @Component
 public abstract class AbstractFirstAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 

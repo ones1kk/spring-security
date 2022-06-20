@@ -4,7 +4,6 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
 import java.util.Collections;
 
 public class SecondAuthenticationToken extends AbstractAuthenticationToken {
@@ -24,7 +23,7 @@ public class SecondAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     private void validate(Object principal, String credentials) {
-        if(principal == null || credentials == null) throw new NullPointerException();
+        if (principal == null || credentials == null) throw new NullPointerException();
     }
 
     @Override

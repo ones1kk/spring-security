@@ -1,6 +1,5 @@
 package com.onesik.springsecurity.web.filter.security.handler;
 
-import com.onesik.springsecurity.service.UserService;
 import com.onesik.springsecurity.web.filter.security.filter.AbstractFirstAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;

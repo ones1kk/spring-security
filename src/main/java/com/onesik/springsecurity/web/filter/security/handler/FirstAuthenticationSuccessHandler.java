@@ -3,11 +3,8 @@ package com.onesik.springsecurity.web.filter.security.handler;
 import com.onesik.springsecurity.domain.SmsHistory;
 import com.onesik.springsecurity.domain.User;
 import com.onesik.springsecurity.service.SmsHistoryService;
-import com.onesik.springsecurity.service.UserService;
-import com.onesik.springsecurity.web.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -18,7 +15,6 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
