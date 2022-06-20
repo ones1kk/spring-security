@@ -1,5 +1,7 @@
 package com.onesik.springsecurity.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,7 +16,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@EqualsAndHashCode(exclude = "phoneNo")
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode(of = "phoneNo")
 public class User {
 
     @Id
@@ -28,4 +32,11 @@ public class User {
 
     @CreatedDate
     private LocalDateTime creatDateTime;
+
+    public User(String username, String phoneNo, String birthDate) {
+        this.username = username;
+        this.phoneNo = phoneNo;
+        this.birthDate = birthDate;
+        this.creatDateTime = LocalDateTime.now();
+    }
 }
