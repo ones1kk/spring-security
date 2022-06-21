@@ -1,7 +1,6 @@
 package com.onesik.springsecurity.web.filter.security.filter.config;
 
 import com.onesik.springsecurity.config.constant.AuthenticationPath;
-import com.onesik.springsecurity.service.SmsHistoryService;
 import com.onesik.springsecurity.service.UserService;
 import com.onesik.springsecurity.web.filter.security.filter.AbstractFirstAuthenticationFilter;
 import com.onesik.springsecurity.web.filter.security.filter.FirstAuthenticateFilter;
@@ -14,6 +13,7 @@ import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+
 public final class SecondAuthenticationConfigurer<H extends HttpSecurityBuilder<H>> extends
         AbstractAuthenticationFilterConfigurer<H, SecondAuthenticationConfigurer<H>, SecondAuthenticationFilter> {
 

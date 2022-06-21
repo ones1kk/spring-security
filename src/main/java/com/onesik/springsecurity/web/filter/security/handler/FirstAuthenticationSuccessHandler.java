@@ -1,12 +1,10 @@
 package com.onesik.springsecurity.web.filter.security.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesik.springsecurity.domain.SmsHistory;
 import com.onesik.springsecurity.domain.User;
 import com.onesik.springsecurity.service.SmsHistoryService;
 import com.onesik.springsecurity.service.UserService;
 import com.onesik.springsecurity.web.jwt.JwtProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 

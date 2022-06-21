@@ -1,15 +1,19 @@
 package com.onesik.springsecurity.web.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -49,7 +53,7 @@ public class JwtProvider {
         Optional<Cookie> jwtToken = Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals("X-AUTH-TOKEN"))
                 .findFirst();
-        if(jwtToken.isEmpty()) return null;
+        if (jwtToken.isEmpty()) return null;
 
         return getUserPhoneNo(jwtToken.get().getValue());
     }

@@ -1,9 +1,7 @@
 package com.onesik.springsecurity.web.filter.security.filter;
 
 import com.onesik.springsecurity.config.constant.AuthenticationPath;
-import com.onesik.springsecurity.domain.SmsHistory;
 import com.onesik.springsecurity.domain.User;
-import com.onesik.springsecurity.service.SmsHistoryService;
 import com.onesik.springsecurity.service.UserService;
 import com.onesik.springsecurity.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.springsecurity.web.filter.security.token.SecondAuthenticationToken;
