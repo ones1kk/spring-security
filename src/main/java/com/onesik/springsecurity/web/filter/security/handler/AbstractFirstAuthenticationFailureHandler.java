@@ -36,10 +36,7 @@ public abstract class AbstractFirstAuthenticationFailureHandler extends SimpleUr
 
         saveException(request, exception);
 
-        String phoneNo = resolveUserPhoneNo(request);
-
-
-        // Save login history.
+        // Doing something
 
 
         // Forward or redirect to url.

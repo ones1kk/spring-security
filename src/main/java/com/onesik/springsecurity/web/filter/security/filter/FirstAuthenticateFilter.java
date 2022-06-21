@@ -27,8 +27,7 @@ public class FirstAuthenticateFilter extends AbstractFirstAuthenticationFilter {
         FirstAuthenticationToken token = new FirstAuthenticationToken(createUser);
 
         // Call Authentication Provider
-        Authentication authenticate = super.getAuthenticationManager().authenticate(token);
-        return authenticate;
+        return super.getAuthenticationManager().authenticate(token);
     }
 
     private String getRequestParam(HttpServletRequest request, String paramName) {
