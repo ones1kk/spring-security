@@ -3,18 +3,21 @@ package com.onesik.springsecurity.config;
 import com.onesik.springsecurity.config.constant.AuthenticationPath;
 import com.onesik.springsecurity.service.SmsHistoryService;
 import com.onesik.springsecurity.service.UserService;
+import com.onesik.springsecurity.web.filter.security.filter.config.SecondAuthenticationConfigurer;
 import com.onesik.springsecurity.web.filter.security.filter.AbstractFirstAuthenticationFilter;
 import com.onesik.springsecurity.web.filter.security.filter.FirstAuthenticateFilter;
 import com.onesik.springsecurity.web.filter.security.handler.FirstAuthenticationFailureHandler;
 import com.onesik.springsecurity.web.filter.security.handler.FirstAuthenticationSuccessHandler;
 import com.onesik.springsecurity.web.filter.security.provider.FirstAuthenticationProvider;
+import com.onesik.springsecurity.web.filter.security.provider.SecondAuthenticationProvider;
+import com.onesik.springsecurity.web.filter.security.token.FirstAuthenticationToken;
+import com.onesik.springsecurity.web.filter.security.token.SecondAuthenticationToken;
 import com.onesik.springsecurity.web.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -29,7 +32,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserService service;
+    private final UserService userService;
 
     private final JwtProvider jwtProvider;
 
@@ -41,12 +44,19 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, staticResources()).permitAll()
                 .antMatchers(HttpMethod.GET, "/favicon.ico", "/sm/*/**").permitAll()
 
-                // first login
+                // 1st login
                 .antMatchers(AuthenticationPath.FIRST_LOGIN_PAGE.getPath(),
                         AuthenticationPath.FIRST_LOGIN_API.getPath())
                 .permitAll()
 
-                // second login
+                // 2nd login
+                .antMatchers(AuthenticationPath.SECOND_LOGIN_PAGE.getPath(),
+                        AuthenticationPath.SECOND_LOGIN_API.getPath())
+                .hasAnyAuthority(FirstAuthenticationToken.AUTHORITY.getAuthority())
+
+                // logout
+                .antMatchers(AuthenticationPath.LOGOUT_API.getPath())
+                .hasAnyAuthority(SecondAuthenticationToken.AUTHORITY.getAuthority())
 
                 .antMatchers(allowedResources()).permitAll()
 
@@ -61,26 +71,28 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        ProviderManager manager = new ProviderManager(List.of(new FirstAuthenticationProvider(service)));
-        List<AuthenticationProvider> providers = manager.getProviders();
-        providers.forEach(System.out::println);
-        return manager;
+        return new ProviderManager(List.of(new FirstAuthenticationProvider(userService), new SecondAuthenticationProvider(smsHistoryService)));
     }
-
 
     private void login(HttpSecurity http) throws Exception {
         AbstractFirstAuthenticationFilter firstFilter = new FirstAuthenticateFilter();
         firstFilter.setAuthenticationManager(this.authenticationManager());
         firstFilter.setAuthenticationSuccessHandler(
-                new FirstAuthenticationSuccessHandler(AuthenticationPath.SECOND_LOGIN_PAGE.getPath(), smsHistoryService));
+                new FirstAuthenticationSuccessHandler(AuthenticationPath.SECOND_LOGIN_PAGE.getPath()
+                        , smsHistoryService, jwtProvider, userService));
+
         firstFilter.setAuthenticationFailureHandler(
                 new FirstAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
+
+        http.apply(new SecondAuthenticationConfigurer<>(jwtProvider, userService))
+                .successForwardUrl(AuthenticationPath.HOME_PAGE.getPath())
+                .failureForwardUrl(AuthenticationPath.SECOND_LOGIN_PAGE.getPath());
 
         http.addFilterBefore(firstFilter, LogoutFilter.class);
     }
 
 
-    protected void configure(HttpSecurity http) throws Exception {
+    private void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .cors().disable()
                 .headers().frameOptions().disable();
@@ -97,12 +109,12 @@ public class SecurityConfig {
     }
 
     private static String[] staticResources() {
-        return Stream.of("css", "fonts", "images", "js", "security").map(it -> "/" + it + "/*/**")
+        return Stream.of("css", "fonts", "images", "js").map(it -> "/" + it + "/*/**")
                 .toArray(String[]::new);
     }
 
     private static String[] allowedResources() {
-        return Stream.of("/**").toArray(String[]::new);
+        return Stream.of("/apis/*/**").toArray(String[]::new);
     }
 
 }
