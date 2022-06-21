@@ -1,9 +1,6 @@
 package com.onesik.springsecurity.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -38,5 +36,9 @@ public class User {
         this.phoneNo = phoneNo;
         this.birthDate = birthDate;
         this.creatDateTime = LocalDateTime.now();
+    }
+
+    public void updateJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
     }
 }
