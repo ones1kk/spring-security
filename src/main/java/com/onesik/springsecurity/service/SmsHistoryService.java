@@ -13,6 +13,10 @@ public class SmsHistoryService {
 
     private final SmsHistoryRepository repository;
 
+    public SmsHistory findByUserId(Long userId) {
+        return repository.findByUserId(userId);
+    }
+
     @Transactional
     public void save(SmsHistory smsHistory) {
         repository.save(smsHistory);
