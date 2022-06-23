@@ -20,6 +20,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -93,9 +94,10 @@ public class SecurityConfig {
 
 
     private void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .cors().disable()
-                .headers().frameOptions().disable();
+        http.csrf().disable();
+        http.cors().disable();
+        http.headers().frameOptions().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     private void exceptionHandling(HttpSecurity http) throws Exception {
