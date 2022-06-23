@@ -4,6 +4,7 @@ import com.onesik.springsecurity.domain.SmsHistory;
 import com.onesik.springsecurity.domain.User;
 import com.onesik.springsecurity.service.SmsHistoryService;
 import com.onesik.springsecurity.service.UserService;
+import com.onesik.springsecurity.web.jwt.AbstractJwtProvider;
 import com.onesik.springsecurity.web.jwt.JwtProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -56,11 +57,17 @@ public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
         String phoneNo = user.getPhoneNo();
         Long userId = user.getId();
 
-        String jwtToken = jwtProvider.createToken(phoneNo);
-        userService.updateUserJwtToken(jwtToken, userId);
+        String phoneNoJwtToken = jwtProvider.createToken(phoneNo);
+        userService.updateUserJwtToken(phoneNoJwtToken, userId);
 
-        // 토큰 정보를 Response에 담는다
-        response.addCookie(new Cookie("X-AUTH-TOKEN", jwtToken));
+        // Add PK, Authentication in Cookie
+        // TODO Do not add cookie by PK
+        // @Deprecated
+        response.addCookie(new Cookie(AbstractJwtProvider.X_AUTH_TOKEN, phoneNoJwtToken));
+
+        // TODO Add Cookie of Authentication
+//        String authenticationJwtToken = jwtProvider.createToken(authentication)
+//        response.addCookie(new Cookie(AbstractJwtProvider.AUTHENTICATION, authenticationJwtToken));
 
         super.onAuthenticationSuccess(request, response, authentication);
     }
