@@ -2,7 +2,7 @@ package com.onesik.springsecurity.web.filter.security.provider;
 
 import com.onesik.springsecurity.domain.User;
 import com.onesik.springsecurity.service.UserService;
-import com.onesik.springsecurity.web.dto.CreateUserDto;
+import com.onesik.springsecurity.web.dto.LoginUserDto;
 import com.onesik.springsecurity.web.filter.security.token.FirstAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,7 +17,7 @@ public class FirstAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        CreateUserDto userDto = (CreateUserDto) authentication.getPrincipal();
+        LoginUserDto userDto = (LoginUserDto) authentication.getPrincipal();
         User user = userDto.toEntity();
         String phoneNo = userDto.getPhoneNo();
         User findUser = service.findByPhoneNo(phoneNo);

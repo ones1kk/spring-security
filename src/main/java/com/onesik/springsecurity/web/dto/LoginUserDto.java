@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateUserDto {
+public class LoginUserDto {
 
     private String username;
     private String birthDate;

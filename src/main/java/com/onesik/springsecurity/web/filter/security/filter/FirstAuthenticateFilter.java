@@ -1,6 +1,6 @@
 package com.onesik.springsecurity.web.filter.security.filter;
 
-import com.onesik.springsecurity.web.dto.CreateUserDto;
+import com.onesik.springsecurity.web.dto.LoginUserDto;
 import com.onesik.springsecurity.web.filter.security.token.FirstAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,7 +18,7 @@ public class FirstAuthenticateFilter extends AbstractFirstAuthenticationFilter {
         String birthDate = getRequestParam(request, AbstractFirstAuthenticationFilter.BIRTH_DATE);
         String phoneNumber = getRequestParam(request, AbstractFirstAuthenticationFilter.PHONE_NO);
 
-        CreateUserDto createUser = CreateUserDto.builder()
+        LoginUserDto createUser = LoginUserDto.builder()
                 .username(username)
                 .birthDate(birthDate)
                 .phoneNo(phoneNumber)
