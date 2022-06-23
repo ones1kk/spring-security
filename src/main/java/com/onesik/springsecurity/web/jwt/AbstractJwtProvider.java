@@ -3,21 +3,18 @@ package com.onesik.springsecurity.web.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-@Component
+
 public abstract class AbstractJwtProvider<T> {
 
     private String secretKey = "c88d74ba-1554-48a4-b549-b926f5d77c9e";
 
-    public final static String X_AUTH_TOKEN = "x-auth-token";
-
-    public final static String AUTHENTICATION = "authentication";
+    public final static String X_AUTH_TOKEN = "X_AUTH_TOKEN";
 
     // 3 Days
     protected static final long expiredTime = ((3 * 60 * 1000L) * 24) * 60;
@@ -32,8 +29,7 @@ public abstract class AbstractJwtProvider<T> {
         claims.put(name, type);
 
         Date now = new Date();
-        return Jwts.builder()
-                .setClaims(claims)
+        return Jwts.builder().setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expiredTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -42,8 +38,10 @@ public abstract class AbstractJwtProvider<T> {
 
     @SuppressWarnings("unchecked")
     protected T getKey(String token, String key) {
-        Claims body = Jwts.parser().setSigningKey(secretKey)
-                .parseClaimsJws(token).getBody();
+        Claims body = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
         validate(body, key);
 
         return (T) body.get(key);
