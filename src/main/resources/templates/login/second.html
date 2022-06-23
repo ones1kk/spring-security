@@ -3,18 +3,27 @@
 <html>
 
 <head>
-    <title>Good Thymes Virtual Grocery</title>
+    <title>Login Page Separated Into 2 Pages</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
-<form method="POST" action="/apis/login/second">
-    <h4>인증번호</h4><br>
-    <input type="text" name="authNo"/>
-    <br><br>
-    <button type="submit">전송</button>
-</form>
-
+<div class="div">
+    <div>
+        <form method="POST" action="/apis/login/second">
+            <h4>Authentication Number</h4><br>
+            <input type="text" name="authNo"/>
+            <br><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
 </body>
+<style type="text/css">
+    .div {
+        display: flex;
+        justify-content: center;
+    }
+</style>
 
 </html>

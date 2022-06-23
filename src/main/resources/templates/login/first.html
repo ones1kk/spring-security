@@ -3,24 +3,34 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Good Thymes Virtual Grocery</title>
+    <title>Login Page Separated Into 2 Pages</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 
 <body>
-<form method="POST" action="/apis/login/first">
-        <h4>이름</h4> <br>
-        <input type="text" name = "username" value="user"/>
-        <br>
-        <h4>생년월일</h4> <br>
-        <input type="text" name = "birthDate" value="950201"/>
-        <br>
-        <h4>휴대폰번호</h4> <br>
-        <input type="text" name = "phoneNo" value="01012341234"/>
-        <br><br>
-    <button type ="submit">전송</button>
-</form>
+<div class="div">
+    <div>
+        <form method="POST" action="/apis/login/first">
+                <h4>Name</h4> <br>
+                <input type="text" name = "username" value="wonsikKim"/>
+                <br>
+                <h4>Birth Date</h4> <br>
+                <input type="text" name = "birthDate" value="950201"/>
+                <br>
+                <h4>Phone Number</h4> <br>
+                <input type="text" name = "phoneNo" value="01012341234"/>
+                <br><br>
+            <button type ="submit">Login</button>
+        </form>
+    </div>
+</div>
 
 </body>
+<style type="text/css">
+    .div {
+        display: flex;
+        justify-content: center;
+    }
+</style>
 
 </html>
