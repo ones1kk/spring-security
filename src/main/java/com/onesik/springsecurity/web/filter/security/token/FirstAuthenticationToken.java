@@ -37,4 +37,10 @@ public class FirstAuthenticationToken extends AbstractAuthenticationToken {
     public void eraseCredentials() {
         super.eraseCredentials();
     }
+
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+
 }

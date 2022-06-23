@@ -35,4 +35,10 @@ public class SecondAuthenticationToken extends AbstractAuthenticationToken {
     public Object getPrincipal() {
         return principal;
     }
+
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+
 }
