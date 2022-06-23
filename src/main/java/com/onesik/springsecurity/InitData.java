@@ -28,7 +28,7 @@ public class InitData {
         private final EntityManager em;
 
         public void dbInit() {
-            User user = new User("user1", "01012341234", "950201");
+            User user = new User("wonsikKim", "01012341234", "950201");
             em.persist(user);
         }
 

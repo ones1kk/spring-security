@@ -17,8 +17,7 @@ public class SecondAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        // Doing something
+        // Doing something ex: save loginHistory...
         super.onAuthenticationSuccess(request, response, authentication);
-
     }
 }

@@ -19,7 +19,7 @@ public abstract class AbstractJwtProvider<T> {
 
     public final static String AUTHENTICATION = "authentication";
 
-    // 3일
+    // 3 Days
     protected static final long expiredTime = ((3 * 60 * 1000L) * 24) * 60;
 
     @PostConstruct
