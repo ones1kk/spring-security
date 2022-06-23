@@ -2,11 +2,10 @@ package com.onesik.springsecurity.service;
 
 import com.onesik.springsecurity.domain.User;
 import com.onesik.springsecurity.repository.UserRepository;
+import com.onesik.springsecurity.web.exception.NotFoundUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class UserService {
 
     @Transactional
     public void updateUserJwtToken(String jwtToken, Long userId) {
-        User user = repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Not Found"));
+        User user = repository.findById(userId).orElseThrow(() -> new NotFoundUserException("Not Found"));
         user.updateJwtToken(jwtToken);
     }
 }
