@@ -12,6 +12,8 @@ import com.onesik.springsecurity.web.filter.security.provider.FirstAuthenticatio
 import com.onesik.springsecurity.web.filter.security.provider.SecondAuthenticationProvider;
 import com.onesik.springsecurity.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.springsecurity.web.filter.security.token.SecondAuthenticationToken;
+import com.onesik.springsecurity.web.jwt.AbstractJwtProvider;
+import com.onesik.springsecurity.web.jwt.AuthenticationTypeJwtProvider;
 import com.onesik.springsecurity.web.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -38,6 +41,11 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
 
     private final SmsHistoryService smsHistoryService;
+
+    @Bean
+    public AbstractJwtProvider<Authentication> jwtProvider() {
+        return new AuthenticationTypeJwtProvider();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
