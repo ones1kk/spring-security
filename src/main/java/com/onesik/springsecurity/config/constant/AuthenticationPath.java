@@ -12,7 +12,7 @@ public enum AuthenticationPath {
     SECOND_LOGIN_PAGE("/login/second"),
     SECOND_LOGIN_API("/apis/login/second"),
 
-    HOME_PAGE("/"),
+    HOME_PAGE("/home"),
 
     LOGOUT_API("/apis/logout");
 
