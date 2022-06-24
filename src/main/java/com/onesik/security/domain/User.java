@@ -26,6 +26,7 @@ public class User {
     private String username;
     private String phoneNo;
     private String birthDate;
+    @Column(columnDefinition = "TEXT")
     private String jwtToken;
 
     @CreatedDate
