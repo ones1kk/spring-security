@@ -3,9 +3,11 @@ package com.onesik.security.web.filter.security.filter;
 import com.onesik.security.config.constant.AuthenticationPath;
 import com.onesik.security.domain.User;
 import com.onesik.security.service.UserService;
+import com.onesik.security.web.exception.NotAuthenticatedUserException;
 import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
-import com.onesik.security.web.jwt.JwtProvider;
+import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
+import com.onesik.security.web.util.HttpServletResponseUtil;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,9 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.onesik.security.web.jwt.AbstractJwtTokenProvider.X_AUTH_TOKEN;
+import static com.onesik.security.web.util.HttpServletResponseUtil.*;
+
 public class SecondAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final JwtProvider jwtProvider;
+    private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
 
     private final UserService userService;
 
@@ -31,15 +36,9 @@ public class SecondAuthenticationFilter extends AbstractAuthenticationProcessing
     private static final RequestMatcher DEFAULT_REQUEST_MATCHER = new AntPathRequestMatcher(
             AuthenticationPath.SECOND_LOGIN_API.getPath(), HttpMethod.POST.name());
 
-    public SecondAuthenticationFilter(JwtProvider jwtProvider, UserService userService) {
+    public SecondAuthenticationFilter(AbstractJwtTokenProvider<Authentication> jwtTokenProvider, UserService userService) {
         super(DEFAULT_REQUEST_MATCHER);
-        this.jwtProvider = jwtProvider;
-        this.userService = userService;
-    }
-
-    public SecondAuthenticationFilter(String requestPattern, JwtProvider jwtProvider, UserService userService) {
-        super(new AntPathRequestMatcher(requestPattern, HttpMethod.POST.name()).getPattern());
-        this.jwtProvider = jwtProvider;
+        this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
     }
 
@@ -62,14 +61,20 @@ public class SecondAuthenticationFilter extends AbstractAuthenticationProcessing
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        String phoneNo = jwtProvider.resolveToken(request);
+        String jwtToken = jwtTokenProvider.resolveToken(request, X_AUTH_TOKEN);
+        Authentication authentication = jwtTokenProvider.getAuthentication(jwtToken);
+        User user = (User) authentication.getPrincipal();
+        String phoneNo = user.getPhoneNo();
 
-        User user = userService.findByPhoneNo(phoneNo);
-        Long userId = user.getId();
+        User findUser = userService.findByPhoneNo(phoneNo);
+
+        if (!user.equals(findUser)) throw new NotAuthenticatedUserException();
 
         String expectedAuthNo = getParamFromRequest(request, AUTHENTICATION_NUMBER);
 
-        Authentication token = new SecondAuthenticationToken(userId, expectedAuthNo);
+        Authentication token = new SecondAuthenticationToken(findUser, expectedAuthNo);
+
+        expireCookie(response, X_AUTH_TOKEN);
 
         return super.getAuthenticationManager().authenticate(token);
     }

@@ -1,6 +1,7 @@
 package com.onesik.security.web.filter.security.provider;
 
 import com.onesik.security.domain.SmsHistory;
+import com.onesik.security.domain.User;
 import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,17 @@ public class SecondAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Long userId = (Long) authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
         String expectedAuthNo = (String) authentication.getCredentials();
+
+        Long userId = user.getId();
 
         SmsHistory smsHistory = smsHistoryService.findByUserId(userId);
         String authNo = smsHistory.getAuthNo();
 
         if (!authNo.equals(expectedAuthNo)) throw new BadCredentialsException("Authentication number does not match");
 
-        Authentication token = new SecondAuthenticationToken(userId, authNo);
+        Authentication token = new SecondAuthenticationToken(user, authNo);
         token.setAuthenticated(true);
 
         return token;
