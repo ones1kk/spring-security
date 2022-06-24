@@ -3,18 +3,16 @@ package com.onesik.security.config;
 import com.onesik.security.config.constant.AuthenticationPath;
 import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.service.UserService;
-import com.onesik.security.web.filter.security.filter.AbstractFirstAuthenticationFilter;
-import com.onesik.security.web.filter.security.filter.FirstAuthenticateFilter;
-import com.onesik.security.web.filter.security.filter.config.SecondAuthenticationConfigurer;
+import com.onesik.security.web.filter.security.filter.*;
 import com.onesik.security.web.filter.security.handler.FirstAuthenticationFailureHandler;
 import com.onesik.security.web.filter.security.handler.FirstAuthenticationSuccessHandler;
+import com.onesik.security.web.filter.security.handler.SecondAuthenticationFailureHandler;
+import com.onesik.security.web.filter.security.handler.SecondAuthenticationSuccessHandler;
 import com.onesik.security.web.filter.security.provider.FirstAuthenticationProvider;
 import com.onesik.security.web.filter.security.provider.SecondAuthenticationProvider;
 import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
-import com.onesik.security.web.jwt.AbstractJwtProvider;
-import com.onesik.security.web.jwt.AuthenticationTypeJwtProvider;
-import com.onesik.security.web.jwt.JwtProvider;
+import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +24,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -38,14 +37,9 @@ public class SecurityConfig {
 
     private final UserService userService;
 
-    private final JwtProvider jwtProvider;
+    private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
 
     private final SmsHistoryService smsHistoryService;
-
-    @Bean
-    public AbstractJwtProvider<Authentication> jwtProvider() {
-        return new AuthenticationTypeJwtProvider();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -62,6 +56,10 @@ public class SecurityConfig {
                 .antMatchers(AuthenticationPath.SECOND_LOGIN_PAGE.getPath(),
                         AuthenticationPath.SECOND_LOGIN_API.getPath())
                 .hasAnyAuthority(FirstAuthenticationToken.AUTHORITY.getAuthority())
+
+                // authenticated pages
+                .antMatchers(AuthenticationPath.HOME_PAGE.getPath())
+                .hasAnyAuthority(SecondAuthenticationToken.AUTHORITY.getAuthority())
 
                 // logout
                 .antMatchers(AuthenticationPath.LOGOUT_API.getPath())
@@ -85,19 +83,24 @@ public class SecurityConfig {
 
     private void login(HttpSecurity http) throws Exception {
         AbstractFirstAuthenticationFilter firstFilter = new FirstAuthenticateFilter();
-        firstFilter.setAuthenticationManager(this.authenticationManager());
+        firstFilter.setAuthenticationManager(authenticationManager());
         firstFilter.setAuthenticationSuccessHandler(
                 new FirstAuthenticationSuccessHandler(AuthenticationPath.SECOND_LOGIN_PAGE.getPath()
-                        , smsHistoryService, jwtProvider, userService));
+                        , smsHistoryService, jwtTokenProvider, userService));
 
         firstFilter.setAuthenticationFailureHandler(
                 new FirstAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
 
-        http.apply(new SecondAuthenticationConfigurer<>(jwtProvider, userService))
-                .successForwardUrl(AuthenticationPath.HOME_PAGE.getPath())
-                .failureForwardUrl(AuthenticationPath.SECOND_LOGIN_PAGE.getPath());
+        AbstractAuthenticationProcessingFilter secondFilter = new SecondAuthenticationFilter(jwtTokenProvider, userService);
+        secondFilter.setAuthenticationManager(authenticationManager());
+        secondFilter.setAuthenticationSuccessHandler(new SecondAuthenticationSuccessHandler(AuthenticationPath.HOME_PAGE.getPath()
+                , userService, jwtTokenProvider));
+        secondFilter.setAuthenticationFailureHandler(new SecondAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
 
-        http.addFilterBefore(firstFilter, LogoutFilter.class);
+        http.addFilterBefore(firstFilter, FilterSecurityInterceptor.class)
+                .addFilterBefore(new SustainingFirstTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class)
+                .addFilterBefore(secondFilter, FilterSecurityInterceptor.class)
+                .addFilterBefore(new SustainingSecondTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class);
     }
 
 
