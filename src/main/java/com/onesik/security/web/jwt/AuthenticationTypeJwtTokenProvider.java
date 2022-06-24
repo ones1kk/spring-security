@@ -1,11 +1,18 @@
 package com.onesik.security.web.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
+@Component
+public class AuthenticationTypeJwtTokenProvider extends AbstractJwtTokenProvider<Authentication> {
 
-public class AuthenticationTypeJwtProvider extends AbstractJwtProvider<Authentication> {
+    public AuthenticationTypeJwtTokenProvider(ObjectMapper objectMapper) {
+        super(objectMapper);
+    }
 
     // TODO write defense logic
     @Override
