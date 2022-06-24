@@ -29,5 +29,5 @@ public class SmsHistory {
     private String authNo;
 
     @CreatedDate
-    private LocalDateTime localDateTime;
+    private LocalDateTime createDatetime;
 }

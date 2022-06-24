@@ -14,7 +14,7 @@ public class SmsHistoryService {
     private final SmsHistoryRepository repository;
 
     public SmsHistory findByUserId(Long userId) {
-        return repository.findByUserId(userId);
+        return repository.findTop1ByUserIdOrderByCreateDatetimeDesc(userId);
     }
 
     @Transactional
