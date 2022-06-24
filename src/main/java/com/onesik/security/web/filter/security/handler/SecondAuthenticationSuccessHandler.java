@@ -1,7 +1,6 @@
 package com.onesik.security.web.filter.security.handler;
 
 import com.onesik.security.domain.User;
-import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.service.UserService;
 import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
 import org.springframework.security.core.Authentication;
@@ -20,6 +19,7 @@ public class SecondAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final UserService userService;
 
     private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
+
     public SecondAuthenticationSuccessHandler(String targetUrl, UserService userService, AbstractJwtTokenProvider<Authentication> jwtTokenProvider) {
         super(targetUrl);
         this.userService = userService;

@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public abstract class AbstractJwtTokenProvider<T> {
 
-    private final  ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     private String secretKey = "c88d74ba-1554-48a4-b549-b926f5d77c9e";
 
@@ -52,7 +52,7 @@ public abstract class AbstractJwtTokenProvider<T> {
         return getCompact(claims, now);
     }
 
-    @SuppressWarnings( "ConstantConditions")
+    @SuppressWarnings("ConstantConditions")
     public Authentication getAuthentication(String jwtToken) {
         Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken).getBody();
         Object authentication = body.get(X_AUTH_TOKEN);

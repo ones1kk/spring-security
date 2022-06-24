@@ -5,7 +5,6 @@ import com.onesik.security.domain.User;
 import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.service.UserService;
 import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
-import com.onesik.security.web.util.HttpServletResponseUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.onesik.security.web.jwt.AbstractJwtTokenProvider.X_AUTH_TOKEN;
-import static com.onesik.security.web.util.HttpServletResponseUtil.*;
+import static com.onesik.security.web.util.HttpServletResponseUtil.createCookie;
 
 public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

@@ -7,7 +7,6 @@ import com.onesik.security.web.exception.NotAuthenticatedUserException;
 import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
 import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
-import com.onesik.security.web.util.HttpServletResponseUtil;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -23,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.onesik.security.web.jwt.AbstractJwtTokenProvider.X_AUTH_TOKEN;
-import static com.onesik.security.web.util.HttpServletResponseUtil.*;
+import static com.onesik.security.web.util.HttpServletResponseUtil.expireCookie;
 
 public class SecondAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
