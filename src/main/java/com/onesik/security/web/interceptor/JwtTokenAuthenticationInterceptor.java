@@ -21,7 +21,7 @@ public class JwtTokenAuthenticationInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
             return true;
-        }else {
+        } else {
             String jwtToken = jwtTokenProvider.resolveToken(request, X_AUTH_TOKEN);
 
             return jwtTokenProvider.validateToken(jwtToken);
