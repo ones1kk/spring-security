@@ -12,7 +12,7 @@ import com.onesik.security.web.filter.security.provider.FirstAuthenticationProvi
 import com.onesik.security.web.filter.security.provider.SecondAuthenticationProvider;
 import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
-import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
+import com.onesik.security.web.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,16 +28,17 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import javax.servlet.Filter;
 import java.util.List;
 import java.util.stream.Stream;
 
 @Configuration
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class WebSecurityConfig {
 
     private final UserService userService;
 
-    private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
+    private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
     private final SmsHistoryService smsHistoryService;
 
@@ -71,6 +72,7 @@ public class SecurityConfig {
 
         configure(http);
         login(http);
+        logout(http);
         exceptionHandling(http);
 
         return http.build();
@@ -84,6 +86,7 @@ public class SecurityConfig {
     private void login(HttpSecurity http) throws Exception {
         AbstractFirstAuthenticationFilter firstFilter = new FirstAuthenticateFilter();
         firstFilter.setAuthenticationManager(authenticationManager());
+
         firstFilter.setAuthenticationSuccessHandler(
                 new FirstAuthenticationSuccessHandler(AuthenticationPath.SECOND_LOGIN_PAGE.getPath()
                         , smsHistoryService, jwtTokenProvider, userService));
@@ -93,14 +96,24 @@ public class SecurityConfig {
 
         AbstractAuthenticationProcessingFilter secondFilter = new SecondAuthenticationFilter(jwtTokenProvider, userService);
         secondFilter.setAuthenticationManager(authenticationManager());
+
         secondFilter.setAuthenticationSuccessHandler(new SecondAuthenticationSuccessHandler(AuthenticationPath.HOME_PAGE.getPath()
                 , userService, jwtTokenProvider));
+
         secondFilter.setAuthenticationFailureHandler(new SecondAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
+
+//        Filter duplicatedProtectionFilter = new DuplicatedAuthenticationProtectionFilter();
 
         http.addFilterBefore(firstFilter, FilterSecurityInterceptor.class)
                 .addFilterBefore(new SustainingFirstTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class)
                 .addFilterBefore(secondFilter, FilterSecurityInterceptor.class)
                 .addFilterBefore(new SustainingSecondTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class);
+//                .addFilterBefore(duplicatedProtectionFilter, FilterSecurityInterceptor.class);
+    }
+
+    private static void logout(HttpSecurity http) throws Exception {
+        http.logout().logoutUrl(AuthenticationPath.LOGOUT_API.getPath())
+                .logoutSuccessUrl(AuthenticationPath.FIRST_LOGIN_PAGE.getPath());
     }
 
 
