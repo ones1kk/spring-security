@@ -4,7 +4,7 @@ import com.onesik.security.domain.SmsHistory;
 import com.onesik.security.domain.User;
 import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.service.UserService;
-import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
+import com.onesik.security.web.jwt.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.onesik.security.web.jwt.AbstractJwtTokenProvider.X_AUTH_TOKEN;
+import static com.onesik.security.web.jwt.JwtTokenProvider.X_AUTH_TOKEN;
 import static com.onesik.security.web.util.HttpServletResponseUtil.createCookie;
 
 public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -27,10 +27,10 @@ public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
     private final UserService userService;
 
-    private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
+    private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
     public FirstAuthenticationSuccessHandler(String targetUrl, SmsHistoryService smsHistoryService,
-                                             AbstractJwtTokenProvider<Authentication> jwtTokenProvider, UserService userService) {
+                                             JwtTokenProvider<Authentication> jwtTokenProvider, UserService userService) {
         super(targetUrl);
         this.smsHistoryService = smsHistoryService;
         this.jwtTokenProvider = jwtTokenProvider;

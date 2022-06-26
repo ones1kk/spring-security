@@ -1,7 +1,7 @@
 package com.onesik.security.web.filter.security.filter;
 
 import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
-import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
+import com.onesik.security.web.jwt.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -13,14 +13,17 @@ import java.io.IOException;
 
 public class SustainingSecondTokenFilter extends AbstractSustainingTokenFilter {
 
-    public SustainingSecondTokenFilter(AbstractJwtTokenProvider<Authentication> jwtTokenProvider) {
+    public SustainingSecondTokenFilter(JwtTokenProvider<Authentication> jwtTokenProvider) {
         super(jwtTokenProvider);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = get(request, response, filterChain);
-        if (authentication == null) return;
+        if (authentication == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (authentication instanceof FirstAuthenticationToken) {
             filterChain.doFilter(request, response);

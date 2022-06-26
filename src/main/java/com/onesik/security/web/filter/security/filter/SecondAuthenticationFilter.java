@@ -6,7 +6,7 @@ import com.onesik.security.service.UserService;
 import com.onesik.security.web.exception.NotAuthenticatedUserException;
 import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
-import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
+import com.onesik.security.web.jwt.JwtTokenProvider;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,12 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.onesik.security.web.jwt.AbstractJwtTokenProvider.X_AUTH_TOKEN;
+import static com.onesik.security.web.jwt.JwtTokenProvider.X_AUTH_TOKEN;
 import static com.onesik.security.web.util.HttpServletResponseUtil.expireCookie;
 
 public class SecondAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
+    private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
     private final UserService userService;
 
@@ -35,7 +35,7 @@ public class SecondAuthenticationFilter extends AbstractAuthenticationProcessing
     private static final RequestMatcher DEFAULT_REQUEST_MATCHER = new AntPathRequestMatcher(
             AuthenticationPath.SECOND_LOGIN_API.getPath(), HttpMethod.POST.name());
 
-    public SecondAuthenticationFilter(AbstractJwtTokenProvider<Authentication> jwtTokenProvider, UserService userService) {
+    public SecondAuthenticationFilter(JwtTokenProvider<Authentication> jwtTokenProvider, UserService userService) {
         super(DEFAULT_REQUEST_MATCHER);
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;

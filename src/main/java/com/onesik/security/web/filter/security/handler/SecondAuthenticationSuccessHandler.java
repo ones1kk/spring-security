@@ -2,7 +2,7 @@ package com.onesik.security.web.filter.security.handler;
 
 import com.onesik.security.domain.User;
 import com.onesik.security.service.UserService;
-import com.onesik.security.web.jwt.AbstractJwtTokenProvider;
+import com.onesik.security.web.jwt.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -12,15 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.onesik.security.web.jwt.AbstractJwtTokenProvider.X_AUTH_TOKEN;
+import static com.onesik.security.web.jwt.JwtTokenProvider.X_AUTH_TOKEN;
 import static com.onesik.security.web.util.HttpServletResponseUtil.createCookie;
 
 public class SecondAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final UserService userService;
 
-    private final AbstractJwtTokenProvider<Authentication> jwtTokenProvider;
+    private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
-    public SecondAuthenticationSuccessHandler(String targetUrl, UserService userService, AbstractJwtTokenProvider<Authentication> jwtTokenProvider) {
+    public SecondAuthenticationSuccessHandler(String targetUrl, UserService userService, JwtTokenProvider<Authentication> jwtTokenProvider) {
         super(targetUrl);
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
