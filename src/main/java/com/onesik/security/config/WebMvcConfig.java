@@ -1,5 +1,6 @@
 package com.onesik.security.config;
 
+import com.onesik.security.service.UserService;
 import com.onesik.security.web.interceptor.JwtTokenAuthenticationInterceptor;
 import com.onesik.security.web.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
+    private final UserService userService;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new JwtTokenAuthenticationInterceptor(jwtTokenProvider))
+        registry.addInterceptor(new JwtTokenAuthenticationInterceptor(jwtTokenProvider, userService))
                 .addPathPatterns("/**")
                 .excludePathPatterns(staticResources());
     }
