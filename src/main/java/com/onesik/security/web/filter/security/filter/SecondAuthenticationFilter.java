@@ -61,7 +61,7 @@ public class SecondAuthenticationFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         String jwtToken = jwtTokenProvider.resolveToken(request, X_AUTH_TOKEN);
-        Authentication authentication = jwtTokenProvider.getAuthentication(jwtToken);
+        Authentication authentication = jwtTokenProvider.getKey(jwtToken);
         User user = (User) authentication.getPrincipal();
         String phoneNo = user.getPhoneNo();
 

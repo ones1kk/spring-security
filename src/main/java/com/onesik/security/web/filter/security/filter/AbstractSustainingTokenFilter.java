@@ -27,7 +27,7 @@ public abstract class AbstractSustainingTokenFilter extends OncePerRequestFilter
 
         String jwtToken = jwtTokenProvider.resolveToken(request, X_AUTH_TOKEN);
         if (jwtToken == null) return null;
-        return jwtTokenProvider.getAuthentication(jwtToken);
+        return jwtTokenProvider.getKey(jwtToken);
     }
 
 

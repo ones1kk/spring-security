@@ -53,7 +53,7 @@ public class JwtTokenProvider<T> {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public Authentication getAuthentication(String jwtToken) {
+    public Authentication getKey(String jwtToken) {
         Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken).getBody();
         Object authentication = body.get(X_AUTH_TOKEN);
 
