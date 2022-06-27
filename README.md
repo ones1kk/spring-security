@@ -11,7 +11,7 @@
 <br>
 
 It was made as just for practicing to handle Spring-Security.  
-In my work place, there are demands for 2nd authentication, 2 login pages and session stateless.  
+In my work place, there are demands for 2 times authentication, 2 login pages in 1 porccess and session stateless.  
 Try to resolving that's demands through by JwtToken.  
 
 ## Feature
@@ -22,6 +22,6 @@ Try to resolving that's demands through by JwtToken.
   
 
 <!-- Markdown link & img dfn's --> 
-[spring-blog]: https://github.com/yourname/yourproject/wiki
+[spring-blog]: https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
 
 
