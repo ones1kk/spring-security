@@ -12,12 +12,12 @@
 
 It was made as just for practicing to handle Spring-Security.  
 In my work place, there are demands for 2 times authentication, 2 login pages in 1 porccess and session stateless.  
-Try to resolving that's demands through by JwtToken.  
+Trying to resolve that's demands through by JwtToken.  
 
 ## Feature
 > Have applied Spring Security without the WebSecurityConfigurerAdapter(deprecated).  
   *  In Spring Security 5.7.0-M2 we deprecated the WebSecurityConfigurerAdapter, as we encourage users to move towards a component-based security configuration.  
-> _For more informations, please check in the [Spring-Blog][spring-blog]._
+  *  _For more informations, please check in the [Spring-Blog][spring-blog]._
   
   
 
