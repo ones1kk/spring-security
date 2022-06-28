@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -16,6 +18,10 @@ public class UserService {
 
     public User findByPhoneNo(String phoneNo) {
         return repository.findByPhoneNo(phoneNo);
+    }
+
+    public User findById(Long id) {
+        return repository.findById(id).orElseThrow();
     }
 
     @Transactional
