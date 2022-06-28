@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.onesik.security.web.jwt.JwtTokenProvider.*;
+import static com.onesik.security.web.jwt.JwtTokenProvider.X_AUTH_TOKEN;
 
 @Controller
 @RequiredArgsConstructor

@@ -101,13 +101,10 @@ public class WebSecurityConfig {
 
         secondFilter.setAuthenticationFailureHandler(new SecondAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
 
-//        Filter duplicatedProtectionFilter = new DuplicatedAuthenticationProtectionFilter();
-
         http.addFilterBefore(firstFilter, FilterSecurityInterceptor.class)
                 .addFilterBefore(new SustainingFirstTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class)
                 .addFilterBefore(secondFilter, FilterSecurityInterceptor.class)
                 .addFilterBefore(new SustainingSecondTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class);
-//                .addFilterBefore(duplicatedProtectionFilter, FilterSecurityInterceptor.class);
     }
 
     private static void logout(HttpSecurity http) throws Exception {
