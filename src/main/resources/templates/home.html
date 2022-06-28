@@ -7,8 +7,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 
-<body>
+<body style="text-align: center;">
     <h1>HOME PAGE</h1>
+
+    <div th:object="${user}" style="display: inline-block">
+        <div th:text="*{id}"></div>
+        <div th:text="*{username}"></div>
+        <div th:text="*{phoneNo}"></div>
+        <div th:text="*{birthDate}"></div>
+
+
+    </div>
 </body>
 
 </html>
