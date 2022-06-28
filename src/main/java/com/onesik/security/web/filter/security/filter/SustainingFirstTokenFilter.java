@@ -13,14 +13,13 @@ import java.io.IOException;
 
 
 public class SustainingFirstTokenFilter extends AbstractSustainingTokenFilter {
-
     public SustainingFirstTokenFilter(JwtTokenProvider<Authentication> jwtTokenProvider) {
         super(jwtTokenProvider);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Authentication authentication = get(request, response, filterChain);
+        Authentication authentication = get(request);
         if (authentication == null) {
             filterChain.doFilter(request, response);
             return;

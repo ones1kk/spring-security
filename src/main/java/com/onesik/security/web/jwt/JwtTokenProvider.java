@@ -13,7 +13,6 @@ import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -52,12 +51,12 @@ public class JwtTokenProvider<T> {
         return getCompact(claims, now);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    public Authentication getKey(String jwtToken) {
+    @SuppressWarnings(value = {"ConstantConditions", "unchecked"})
+    public T getKey(String jwtToken) {
         Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken).getBody();
         Object authentication = body.get(X_AUTH_TOKEN);
 
-        Optional<AbstractAuthenticationToken> optional = Stream.of(authentication).filter(Objects::nonNull)
+        Optional<T> optional = (Optional<T>) Stream.of(authentication).filter(Objects::nonNull)
                 .filter(auth -> auth instanceof Map)
                 .map(auth -> (Map<?, ?>) auth)
                 .filter(map -> map.containsKey(NAME))
@@ -79,8 +78,8 @@ public class JwtTokenProvider<T> {
                     firstAuthenticationToken.setPrincipal(user);
                     return firstAuthenticationToken;
                 }
-
                 return null;
+
             case "SecondAuthenticationToken":
                 SecondAuthenticationToken secondAuthenticationToken = objectMapper.convertValue(authentication, SecondAuthenticationToken.class);
                 Object SecondPrincipal = secondAuthenticationToken.getPrincipal();
@@ -111,6 +110,12 @@ public class JwtTokenProvider<T> {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public T resolveAndGet(HttpServletRequest request, String cookieName) {
+        String jwtToken = resolveToken(request, cookieName);
+        if (jwtToken == null) return null;
+        return getKey(jwtToken);
     }
 
     private String getCompact(Map<String, Object> claims, Date now) {

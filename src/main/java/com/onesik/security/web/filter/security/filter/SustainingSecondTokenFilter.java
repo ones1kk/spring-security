@@ -19,7 +19,7 @@ public class SustainingSecondTokenFilter extends AbstractSustainingTokenFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Authentication authentication = get(request, response, filterChain);
+        Authentication authentication = get(request);
         if (authentication == null) {
             filterChain.doFilter(request, response);
             return;
