@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = "phoneNo")
+@EqualsAndHashCode(of = "id")
 public class User {
 
     @Id
@@ -41,5 +41,12 @@ public class User {
 
     public void updateJwtToken(String jwtToken) {
         this.jwtToken = jwtToken;
+    }
+
+    public void clear(Long id) {
+        this.id = id;
+        this.birthDate = null;
+        this.phoneNo = null;
+        this.username = null;
     }
 }
