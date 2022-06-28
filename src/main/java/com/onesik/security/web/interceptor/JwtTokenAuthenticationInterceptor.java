@@ -12,8 +12,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.onesik.security.web.jwt.JwtTokenProvider.X_AUTH_TOKEN;
-
 @RequiredArgsConstructor
 public class JwtTokenAuthenticationInterceptor implements HandlerInterceptor {
 
@@ -32,11 +30,11 @@ public class JwtTokenAuthenticationInterceptor implements HandlerInterceptor {
         if (jwtToken != null) {
             Authentication authentication = jwtTokenProvider.getKey(jwtToken);
             User user = (User) authentication.getPrincipal();
-            String phoneNo = user.getPhoneNo();
+            Long userId = user.getId();
 
-            User findUser = userService.findByPhoneNo(phoneNo);
+            User findUser = userService.findById(userId);
 
-            if (!findUser.getPhoneNo().equals(phoneNo)) {
+            if (!findUser.getId().equals(userId)) {
                 throw new NotAuthenticatedUserException("올바르지 않은 사용자입니다.");
             }
 

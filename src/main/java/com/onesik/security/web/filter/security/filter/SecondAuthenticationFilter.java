@@ -63,15 +63,15 @@ public class SecondAuthenticationFilter extends AbstractAuthenticationProcessing
         String jwtToken = jwtTokenProvider.resolveToken(request, X_AUTH_TOKEN);
         Authentication authentication = jwtTokenProvider.getKey(jwtToken);
         User user = (User) authentication.getPrincipal();
-        String phoneNo = user.getPhoneNo();
+        Long userId = user.getId();
 
-        User findUser = userService.findByPhoneNo(phoneNo);
+        User findUser = userService.findById(userId);
 
         if (!user.equals(findUser)) throw new NotAuthenticatedUserException();
 
         String expectedAuthNo = getParamFromRequest(request, AUTHENTICATION_NUMBER);
 
-        Authentication token = new SecondAuthenticationToken(findUser, expectedAuthNo);
+        Authentication token = new SecondAuthenticationToken(user, expectedAuthNo);
 
         expireCookie(response, X_AUTH_TOKEN);
 

@@ -56,7 +56,6 @@ public class FirstAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
         // send SMS
         smsHistoryService.save(smsHistory);
 
-        String phoneNo = user.getPhoneNo();
         Long userId = user.getId();
 
         String jwtToken = jwtTokenProvider.createToken(authentication, X_AUTH_TOKEN);

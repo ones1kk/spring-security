@@ -25,7 +25,7 @@ public class SecondAuthenticationProvider implements AuthenticationProvider {
         SmsHistory smsHistory = smsHistoryService.findByUserId(userId);
         String authNo = smsHistory.getAuthNo();
 
-        if (!authNo.equals(expectedAuthNo)) throw new BadCredentialsException("Authentication number does not match");
+        if (!authNo.equals(expectedAuthNo)) throw new BadCredentialsException("Authentication number is not matched");
 
         Authentication token = new SecondAuthenticationToken(user, authNo);
         token.setAuthenticated(true);

@@ -23,12 +23,12 @@ public class FirstAuthenticationProvider implements AuthenticationProvider {
         User findUser = service.findByPhoneNo(phoneNo);
 
         // validate conditions...
-        if (findUser == null) throw new UsernameNotFoundException("존재하는 회원이 없습니다.");
+        if (findUser == null) throw new UsernameNotFoundException("Can not find user.");
+        user.clear(findUser.getId());
 
-        if (!user.equals(findUser)) throw new UsernameNotFoundException("존재하는 회원이 없습니다.");
+        if (!user.equals(findUser)) throw new UsernameNotFoundException("Can not find user.");
 
-
-        Authentication token = new FirstAuthenticationToken(findUser);
+        Authentication token = new FirstAuthenticationToken(user);
         token.setAuthenticated(true);
 
         return token;
