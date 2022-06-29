@@ -20,6 +20,8 @@ public class ViewController {
     private final UserService userService;
     private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
+    private final JwtTokenProvider<String> exception;
+
     @GetMapping("/home")
     String getHomePage(HttpServletRequest request, Model model) {
         Authentication authentication = jwtTokenProvider.resolveAndGet(request, X_AUTH_TOKEN);
@@ -35,7 +37,7 @@ public class ViewController {
     }
 
     @GetMapping("/login/first")
-    String getFirstLoginPage() {
+    String getFirstLoginPage(HttpServletRequest request, Model model) {
         return "login/first";
     }
 

@@ -1,5 +1,6 @@
 package com.onesik.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesik.security.config.constant.AuthenticationPath;
 import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.service.UserService;
@@ -40,6 +41,8 @@ public class WebSecurityConfig {
     private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
     private final SmsHistoryService smsHistoryService;
+
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -91,7 +94,7 @@ public class WebSecurityConfig {
                         , smsHistoryService, jwtTokenProvider, userService));
 
         firstFilter.setAuthenticationFailureHandler(
-                new FirstAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
+                new FirstAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath(), objectMapper));
 
         AbstractAuthenticationProcessingFilter secondFilter = new SecondAuthenticationFilter(jwtTokenProvider, userService);
         secondFilter.setAuthenticationManager(authenticationManager());

@@ -33,6 +33,8 @@ public class JwtTokenProvider<T> {
     public final static String X_AUTH_TOKEN = "X_AUTH_TOKEN";
     public final static String NAME = "name";
 
+    public final static String ERROR_MESSAGE = "ERR_MSG";
+
     private static final Serializer<Map<String, ?>> JWT_SERIALIZER = new JacksonSerializer<>(new ObjectMapper().registerModule(new JavaTimeModule()));
 
     // 3 Days
@@ -44,11 +46,32 @@ public class JwtTokenProvider<T> {
     }
 
     public String createToken(T type, String name) {
+        // TODO Refactor
+        if (type instanceof String) {
+            return createTokenSubject(name);
+        }
         Map<String, Object> claims = new HashMap<>();
         claims.put(name, type);
 
         Date now = new Date();
         return getCompact(claims, now);
+    }
+
+    private String createTokenSubject(String name) {
+        Claims claims = Jwts.claims().setSubject(name);
+        Date now = new Date();
+        return Jwts.builder()
+                .serializeToJsonWith(JWT_SERIALIZER)
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expiredTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public String getErrorMessage(String jwtToken) {
+        return Jwts.parser().setSigningKey(secretKey)
+                .parseClaimsJws(jwtToken).getBody().getSubject();
     }
 
     @SuppressWarnings(value = {"ConstantConditions", "unchecked"})
@@ -113,6 +136,8 @@ public class JwtTokenProvider<T> {
     }
 
     public T resolveAndGet(HttpServletRequest request, String cookieName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
         String jwtToken = resolveToken(request, cookieName);
         if (jwtToken == null) return null;
         return getKey(jwtToken);
