@@ -2,7 +2,6 @@ package com.onesik.security.web.filter.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesik.security.web.jwt.JwtTokenProvider;
-import com.onesik.security.web.util.HttpServletResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.onesik.security.web.jwt.JwtTokenProvider.*;
-import static com.onesik.security.web.util.HttpServletResponseUtil.*;
+import static com.onesik.security.web.jwt.JwtTokenProvider.ERROR_MESSAGE;
+import static com.onesik.security.web.util.HttpServletResponseUtil.createCookie;
 
 public class FirstAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
@@ -45,8 +44,8 @@ public class FirstAuthenticationFailureHandler extends SimpleUrlAuthenticationFa
         saveException(request, exception);
 
         // TODO Refactor(had errors)
-        if(exception instanceof UsernameNotFoundException) {
-            String message =  "cannotfinduser";
+        if (exception instanceof UsernameNotFoundException) {
+            String message = "cannotfinduser";
             String jwtToken = jwtTokenProvider.createToken(message, ERROR_MESSAGE);
             createCookie(ERROR_MESSAGE, jwtToken);
         }
