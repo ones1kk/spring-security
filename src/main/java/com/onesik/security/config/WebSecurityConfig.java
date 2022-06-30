@@ -133,6 +133,15 @@ public class WebSecurityConfig {
         http.exceptionHandling().accessDeniedHandler(handler);
     }
 
+    @Bean
+    public FilterRegistrationBean<protectAccessFilter> loggingFilter() {
+        FilterRegistrationBean<protectAccessFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new protectAccessFilter(jwtTokenProvider));
+        registrationBean.addUrlPatterns(FIRST_LOGIN_PAGE.getPath());
+        registrationBean.setOrder(0);
+
+        return registrationBean;
+    }
     private static String[] staticResources() {
         return Stream.of("css", "fonts", "images", "js").map(it -> "/" + it + "/*/**")
                 .toArray(String[]::new);
