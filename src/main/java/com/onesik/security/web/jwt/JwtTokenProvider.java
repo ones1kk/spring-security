@@ -33,8 +33,6 @@ public class JwtTokenProvider<T> {
     public final static String X_AUTH_TOKEN = "X_AUTH_TOKEN";
     public final static String NAME = "name";
 
-    public final static String ERROR_MESSAGE = "ERR_MSG";
-
     private static final Serializer<Map<String, ?>> JWT_SERIALIZER = new JacksonSerializer<>(new ObjectMapper().registerModule(new JavaTimeModule()));
 
     // 3 Days

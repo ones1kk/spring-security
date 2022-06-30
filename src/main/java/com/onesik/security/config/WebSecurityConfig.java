@@ -1,7 +1,5 @@
 package com.onesik.security.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onesik.security.config.constant.AuthenticationPath;
 import com.onesik.security.service.SmsHistoryService;
 import com.onesik.security.service.UserService;
 import com.onesik.security.web.filter.security.filter.*;
@@ -15,6 +13,7 @@ import com.onesik.security.web.filter.security.token.FirstAuthenticationToken;
 import com.onesik.security.web.filter.security.token.SecondAuthenticationToken;
 import com.onesik.security.web.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,9 +27,12 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.web.servlet.FlashMapManager;
 
 import java.util.List;
 import java.util.stream.Stream;
+
+import static com.onesik.security.config.constant.AuthenticationPath.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,36 +44,11 @@ public class WebSecurityConfig {
 
     private final SmsHistoryService smsHistoryService;
 
-    private final ObjectMapper objectMapper;
+    private final FlashMapManager flashMapManager;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, staticResources()).permitAll()
-                .antMatchers(HttpMethod.GET, "/favicon.ico", "/sm/*/**").permitAll()
-
-                // 1st login
-                .antMatchers(AuthenticationPath.FIRST_LOGIN_PAGE.getPath(),
-                        AuthenticationPath.FIRST_LOGIN_API.getPath())
-                .permitAll()
-
-                // 2nd login
-                .antMatchers(AuthenticationPath.SECOND_LOGIN_PAGE.getPath(),
-                        AuthenticationPath.SECOND_LOGIN_API.getPath())
-                .hasAnyAuthority(FirstAuthenticationToken.AUTHORITY.getAuthority())
-
-                // authenticated pages
-                .antMatchers(AuthenticationPath.HOME_PAGE.getPath())
-                .hasAnyAuthority(SecondAuthenticationToken.AUTHORITY.getAuthority())
-
-                // logout
-                .antMatchers(AuthenticationPath.LOGOUT_API.getPath())
-                .hasAnyAuthority(SecondAuthenticationToken.AUTHORITY.getAuthority())
-
-                .antMatchers(allowedResources()).permitAll()
-
-                .anyRequest().denyAll();
-
+        authorizeRequest(http);
         configure(http);
         login(http);
         logout(http);
@@ -85,24 +62,52 @@ public class WebSecurityConfig {
         return new ProviderManager(List.of(new FirstAuthenticationProvider(userService), new SecondAuthenticationProvider(smsHistoryService)));
     }
 
+    private void authorizeRequest(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.GET, staticResources()).permitAll()
+                .antMatchers(HttpMethod.GET, "/favicon.ico", "/sm/*/**").permitAll()
+
+                // 1st login
+                .antMatchers(FIRST_LOGIN_PAGE.getPath(),
+                        FIRST_LOGIN_API.getPath())
+                .permitAll()
+
+                // 2nd login
+                .antMatchers(SECOND_LOGIN_PAGE.getPath(),
+                        SECOND_LOGIN_API.getPath())
+                .hasAnyAuthority(FirstAuthenticationToken.AUTHORITY.getAuthority())
+
+                // authenticated pages
+                .antMatchers(HOME_PAGE.getPath())
+                .hasAnyAuthority(SecondAuthenticationToken.AUTHORITY.getAuthority())
+
+                // logout
+                .antMatchers(LOGOUT_API.getPath())
+                .hasAnyAuthority(SecondAuthenticationToken.AUTHORITY.getAuthority())
+
+                .antMatchers(allowedResources()).permitAll()
+
+                .anyRequest().denyAll();
+    }
+
     private void login(HttpSecurity http) throws Exception {
         AbstractFirstAuthenticationFilter firstFilter = new FirstAuthenticateFilter();
         firstFilter.setAuthenticationManager(authenticationManager());
 
         firstFilter.setAuthenticationSuccessHandler(
-                new FirstAuthenticationSuccessHandler(AuthenticationPath.SECOND_LOGIN_PAGE.getPath()
+                new FirstAuthenticationSuccessHandler(SECOND_LOGIN_PAGE.getPath()
                         , smsHistoryService, jwtTokenProvider, userService));
 
         firstFilter.setAuthenticationFailureHandler(
-                new FirstAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath(), objectMapper));
+                new FirstAuthenticationFailureHandler(FIRST_LOGIN_PAGE.getPath(), flashMapManager));
 
         AbstractAuthenticationProcessingFilter secondFilter = new SecondAuthenticationFilter(jwtTokenProvider, userService);
         secondFilter.setAuthenticationManager(authenticationManager());
 
-        secondFilter.setAuthenticationSuccessHandler(new SecondAuthenticationSuccessHandler(AuthenticationPath.HOME_PAGE.getPath()
+        secondFilter.setAuthenticationSuccessHandler(new SecondAuthenticationSuccessHandler(HOME_PAGE.getPath()
                 , userService, jwtTokenProvider));
 
-        secondFilter.setAuthenticationFailureHandler(new SecondAuthenticationFailureHandler(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
+        secondFilter.setAuthenticationFailureHandler(new SecondAuthenticationFailureHandler(FIRST_LOGIN_PAGE.getPath(), flashMapManager));
 
         http.addFilterBefore(firstFilter, FilterSecurityInterceptor.class)
                 .addFilterBefore(new SustainingFirstTokenFilter(jwtTokenProvider), FilterSecurityInterceptor.class)
@@ -111,8 +116,8 @@ public class WebSecurityConfig {
     }
 
     private static void logout(HttpSecurity http) throws Exception {
-        http.logout().logoutUrl(AuthenticationPath.LOGOUT_API.getPath())
-                .logoutSuccessUrl(AuthenticationPath.FIRST_LOGIN_PAGE.getPath());
+        http.logout().logoutUrl(LOGOUT_API.getPath())
+                .logoutSuccessUrl(FIRST_LOGIN_PAGE.getPath());
     }
 
 
@@ -125,23 +130,24 @@ public class WebSecurityConfig {
 
     private void exceptionHandling(HttpSecurity http) throws Exception {
         // AuthenticationException
-        http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(AuthenticationPath.FIRST_LOGIN_PAGE.getPath()));
+        http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(FIRST_LOGIN_PAGE.getPath()));
 
         // AccessDeniedException
         AccessDeniedHandlerImpl handler = new AccessDeniedHandlerImpl();
-        handler.setErrorPage(AuthenticationPath.FIRST_LOGIN_PAGE.getPath());
+        handler.setErrorPage(FIRST_LOGIN_PAGE.getPath());
         http.exceptionHandling().accessDeniedHandler(handler);
     }
 
     @Bean
-    public FilterRegistrationBean<protectAccessFilter> loggingFilter() {
-        FilterRegistrationBean<protectAccessFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new protectAccessFilter(jwtTokenProvider));
+    public FilterRegistrationBean<PreventAccessFilter> loggingFilter() {
+        FilterRegistrationBean<PreventAccessFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new PreventAccessFilter(jwtTokenProvider));
         registrationBean.addUrlPatterns(FIRST_LOGIN_PAGE.getPath());
         registrationBean.setOrder(0);
 
         return registrationBean;
     }
+
     private static String[] staticResources() {
         return Stream.of("css", "fonts", "images", "js").map(it -> "/" + it + "/*/**")
                 .toArray(String[]::new);

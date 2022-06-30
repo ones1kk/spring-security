@@ -9,14 +9,16 @@ import org.springframework.security.core.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.onesik.security.web.util.HttpServletRequestUtil.getRequestParam;
+
 @RequiredArgsConstructor
 public class FirstAuthenticateFilter extends AbstractFirstAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = getRequestParam(request, AbstractFirstAuthenticationFilter.USERNAME);
-        String birthDate = getRequestParam(request, AbstractFirstAuthenticationFilter.BIRTH_DATE);
-        String phoneNumber = getRequestParam(request, AbstractFirstAuthenticationFilter.PHONE_NO);
+        String username = getRequestParam(request, USERNAME);
+        String birthDate = getRequestParam(request, BIRTH_DATE);
+        String phoneNumber = getRequestParam(request, PHONE_NO);
 
         LoginUserDto createUser = LoginUserDto.builder()
                 .username(username)
@@ -28,10 +30,6 @@ public class FirstAuthenticateFilter extends AbstractFirstAuthenticationFilter {
 
         // Call Authentication Provider
         return super.getAuthenticationManager().authenticate(token);
-    }
-
-    private String getRequestParam(HttpServletRequest request, String paramName) {
-        return request.getParameter(paramName);
     }
 
 }
