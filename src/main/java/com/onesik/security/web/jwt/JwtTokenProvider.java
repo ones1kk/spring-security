@@ -11,6 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.jackson.io.JacksonSerializer;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -29,6 +32,8 @@ public class JwtTokenProvider<T> {
     private final ObjectMapper objectMapper;
 
     private String secretKey = "c88d74ba-1554-48a4-b549-b926f5d77c9e";
+
+    private Key key;
 
     public final static String X_AUTH_TOKEN = "X_AUTH_TOKEN";
     public final static String NAME = "name";
@@ -41,13 +46,10 @@ public class JwtTokenProvider<T> {
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String createToken(T type, String name) {
-        // TODO Refactor
-        if (type instanceof String) {
-            return createTokenSubject(name);
-        }
         Map<String, Object> claims = new HashMap<>();
         claims.put(name, type);
 
@@ -55,26 +57,9 @@ public class JwtTokenProvider<T> {
         return getCompact(claims, now);
     }
 
-    private String createTokenSubject(String name) {
-        Claims claims = Jwts.claims().setSubject(name);
-        Date now = new Date();
-        return Jwts.builder()
-                .serializeToJsonWith(JWT_SERIALIZER)
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expiredTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
-    }
-
-    public String getErrorMessage(String jwtToken) {
-        return Jwts.parser().setSigningKey(secretKey)
-                .parseClaimsJws(jwtToken).getBody().getSubject();
-    }
-
     @SuppressWarnings(value = {"ConstantConditions", "unchecked"})
     public T getKey(String jwtToken) {
-        Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken).getBody();
+        Claims body = Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(jwtToken).getBody();
         Object authentication = body.get(X_AUTH_TOKEN);
 
         Optional<T> optional = (Optional<T>) Stream.of(authentication).filter(Objects::nonNull)
@@ -126,7 +111,7 @@ public class JwtTokenProvider<T> {
 
     public boolean validateToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
@@ -147,7 +132,7 @@ public class JwtTokenProvider<T> {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expiredTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
