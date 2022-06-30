@@ -1,14 +1,8 @@
 package com.onesik.security.web.filter.security.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onesik.security.web.jwt.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.FlashMapManager;
-import org.springframework.web.servlet.support.SessionFlashMapManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

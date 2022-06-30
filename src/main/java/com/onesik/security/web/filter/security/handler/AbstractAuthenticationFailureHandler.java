@@ -1,7 +1,6 @@
 package com.onesik.security.web.filter.security.handler;
 
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.FlashMapManager;
@@ -21,9 +20,9 @@ public abstract class AbstractAuthenticationFailureHandler extends SimpleUrlAuth
     }
 
     protected void setErrorMessage(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
-            FlashMap flashMap = new FlashMap();
-            flashMap.put(ERROR_MESSAGE, exception.getMessage());
-            flashMapManager.saveOutputFlashMap(flashMap, request, response);
+        FlashMap flashMap = new FlashMap();
+        flashMap.put(ERROR_MESSAGE, exception.getMessage());
+        flashMapManager.saveOutputFlashMap(flashMap, request, response);
     }
 
 
