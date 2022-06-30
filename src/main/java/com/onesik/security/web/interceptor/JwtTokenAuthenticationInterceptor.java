@@ -35,11 +35,11 @@ public class JwtTokenAuthenticationInterceptor implements HandlerInterceptor {
             User findUser = userService.findById(userId);
 
             if (!findUser.getId().equals(userId)) {
-                throw new NotAuthenticatedUserException("올바르지 않은 사용자입니다.");
+                throw new NotAuthenticatedUserException("Not authenticated user.");
             }
 
             boolean expired = jwtTokenProvider.validateToken(jwtToken);
-            if (!expired) throw new NotAuthenticatedUserException("유효하지 않은 사용자입니다.");
+            if (!expired) throw new NotAuthenticatedUserException("Invalid user.");
 
         }
 
