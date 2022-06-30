@@ -6,25 +6,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.FlashMapManager;
+import org.springframework.web.servlet.support.SessionFlashMapManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.onesik.security.web.jwt.JwtTokenProvider.ERROR_MESSAGE;
-import static com.onesik.security.web.util.HttpServletResponseUtil.createCookie;
-
-public class FirstAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class FirstAuthenticationFailureHandler extends AbstractAuthenticationFailureHandler {
 
     private final String targetUrl;
 
-    private final JwtTokenProvider<String> jwtTokenProvider;
-
-    public FirstAuthenticationFailureHandler(String targetUrl, ObjectMapper objectMapper) {
-        super(targetUrl);
+    public FirstAuthenticationFailureHandler(String targetUrl, FlashMapManager flashMapManager) {
+        super(targetUrl, flashMapManager);
         this.targetUrl = targetUrl;
-        this.jwtTokenProvider = new JwtTokenProvider<>(objectMapper);
     }
 
     @Override
@@ -43,12 +40,7 @@ public class FirstAuthenticationFailureHandler extends SimpleUrlAuthenticationFa
 
         saveException(request, exception);
 
-        // TODO Refactor(had errors)
-        if (exception instanceof UsernameNotFoundException) {
-            String message = "cannotfinduser";
-            String jwtToken = jwtTokenProvider.createToken(message, ERROR_MESSAGE);
-            createCookie(ERROR_MESSAGE, jwtToken);
-        }
+        setErrorMessage(request, response, exception);
 
         // Doing something else...
 
