@@ -16,7 +16,7 @@ import java.io.IOException;
 import static com.onesik.security.web.jwt.JwtTokenProvider.X_AUTH_TOKEN;
 
 @RequiredArgsConstructor
-public class protectAccessFilter extends OncePerRequestFilter {
+public class PreventAccessFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider<Authentication> jwtTokenProvider;
 
